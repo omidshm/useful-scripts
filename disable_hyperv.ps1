@@ -1,3 +1,8 @@
+if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+    Start-Process powershell.exe -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs
+    exit
+}
+
 # Stop all running WSL instances
 Write-Host "Stopping all WSL instances..." -ForegroundColor Yellow
 wsl --shutdown
@@ -13,3 +18,7 @@ dism.exe /Online /Disable-Feature:VirtualMachinePlatform /NoRestart
 dism.exe /Online /Disable-Feature:Containers /NoRestart
 
 Write-Host "Hyper-V has been disabled. Please restart your computer to apply changes." -ForegroundColor Green
+
+# Wait for user to press a key
+Write-Host "`nPress any key to close..." -ForegroundColor Cyan
+$null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
